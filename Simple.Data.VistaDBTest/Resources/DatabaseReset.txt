@@ -1,0 +1,371 @@
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TestReset]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[TestReset]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomers]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomers]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[CreateCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[CreateCustomer]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerAndOrders]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerAndOrders]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerCount]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReturnStrings]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[ReturnStrings]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[VarcharAndReturnInt]'))
+DROP FUNCTION [dbo].[VarcharAndReturnInt]
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[VwCustomers]'))
+DROP VIEW [dbo].[VwCustomers];
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SchemaTable]') AND type in (N'U'))
+DROP TABLE [dbo].[SchemaTable]
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[test].[SchemaTable]') AND type in (N'U'))
+DROP TABLE [test].[SchemaTable]
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GroupTestDetail]') AND type in (N'U'))
+DROP TABLE [dbo].[GroupTestDetail]
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GroupTestMaster]') AND type in (N'U'))
+DROP TABLE [dbo].[GroupTestMaster]
+GO
+IF EXISTS (SELECT * FROM sys.schemas WHERE name = N'test')
+DROP SCHEMA [test]
+GO
+IF  EXISTS (SELECT * FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'StringList' AND ss.name = N'dbo')
+DROP TYPE [dbo].[StringList]
+GO
+CREATE TYPE [dbo].[StringList] AS TABLE([Value] nvarchar(50) NOT NULL)
+GO
+CREATE PROCEDURE TestReset 
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Employee]') AND type in (N'U'))
+	DROP TABLE [dbo].[Employee];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Users]') AND type in (N'U'))
+	DROP TABLE [dbo].[Users];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UsersWithChar]') AND type in (N'U'))
+	DROP TABLE [dbo].[UsersWithChar];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[OrderItems]') AND type in (N'U'))
+	DROP TABLE [dbo].[OrderItems];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Orders]') AND type in (N'U'))
+	DROP TABLE [dbo].[Orders];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Items]') AND type in (N'U'))
+	DROP TABLE [dbo].[Items];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Notes]') AND type in (N'U'))
+	DROP TABLE [dbo].[Notes];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Customers]') AND type in (N'U'))
+	DROP TABLE [dbo].[Customers];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PagingTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[PagingTest];
+    IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Images]') AND type in (N'U'))
+	DROP TABLE [dbo].[Images];
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Blobs]') AND type in (N'U'))
+	DROP TABLE [dbo].[Blobs]
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[EnumTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[EnumTest]
+	IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[DeleteTest]
+	IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DecimalTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[DecimalTest]
+	IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GeographyTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[GeographyTest]
+	IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GeometryTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[GeometryTest]
+	IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[HierarchyIdTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[HierarchyIdTest]
+	IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TimestampTest]') AND type in (N'U'))
+	DROP TABLE [dbo].[TimestampTest]
+
+	CREATE TABLE [dbo].[Users] (
+		[Id]       INT            IDENTITY (1, 1) NOT NULL,
+		[Name]     NVARCHAR (100) NOT NULL,
+		[Password] NVARCHAR (100) NOT NULL,
+		[Age]      INT            NOT NULL
+	);
+
+	ALTER TABLE [dbo].[Users]
+		ADD CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED ([Id] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[UsersWithChar] (
+		[Id]       INT            IDENTITY (1, 1) NOT NULL,
+		[Name]     NCHAR (100) NOT NULL,
+		[Password] NCHAR (100) NOT NULL,
+		[Age]      INT            NOT NULL
+	);
+
+	ALTER TABLE [dbo].[UsersWithChar]
+		ADD CONSTRAINT [PK_UsersWithChar] PRIMARY KEY CLUSTERED ([Id] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[Employee](
+		[Id] [int] IDENTITY(1,1) NOT NULL,
+		[Name] [nvarchar](50) NOT NULL,
+		[ManagerId] [int] NULL)
+
+	ALTER TABLE [dbo].[Employee]
+		ADD CONSTRAINT [PK_Employee] PRIMARY KEY CLUSTERED ([Id] ASC)
+
+	CREATE TABLE [dbo].[Orders] (
+		[OrderId]    INT      IDENTITY (1, 1) NOT NULL,
+		[OrderDate]  DATETIME NOT NULL,
+		[CustomerId] INT      NOT NULL
+	);
+
+	ALTER TABLE [dbo].[Orders]
+		ADD CONSTRAINT [PK_Orders] PRIMARY KEY CLUSTERED ([OrderId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[OrderItems] (
+		[OrderItemId] INT IDENTITY (1, 1) NOT NULL,
+		[OrderId]     INT NOT NULL,
+		[ItemId]      INT NOT NULL,
+		[Quantity]    INT NOT NULL
+	);
+
+	ALTER TABLE [dbo].[OrderItems]
+		ADD CONSTRAINT [PK_OrderItems] PRIMARY KEY CLUSTERED ([OrderItemId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+    CREATE TABLE [dbo].[Images](
+	    [Id] [int] NOT NULL,
+	    [TheImage] [image] NOT NULL
+    );
+
+    ALTER TABLE [dbo].[Images]
+		ADD CONSTRAINT [PK_Images] PRIMARY KEY CLUSTERED ([Id] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[Items] (
+		[ItemId] INT            IDENTITY (1, 1) NOT NULL,
+		[Name]   NVARCHAR (100) NOT NULL,
+		[Price]  MONEY          NOT NULL
+	);
+
+	ALTER TABLE [dbo].[Items]
+		ADD CONSTRAINT [PK_Items] PRIMARY KEY CLUSTERED ([ItemId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[Customers] (
+		[CustomerId] INT            IDENTITY (1, 1) NOT NULL,
+		[Name]       NVARCHAR (100) NOT NULL,
+		[Address]    NVARCHAR (200) NULL
+	);
+
+	ALTER TABLE [dbo].[Customers]
+		ADD CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+	CREATE TABLE [dbo].[Notes](
+		[NoteId] [int] IDENTITY(1,1) NOT NULL,
+		[CustomerId] [int] NOT NULL,
+		[Text] [nvarchar](50) NOT NULL,
+	CONSTRAINT [PK_Notes] PRIMARY KEY CLUSTERED ( [NoteId] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]) ON [PRIMARY]
+	    
+	CREATE TABLE [dbo].[PagingTest] ([Id] int not null, [Dummy] int);
+
+	CREATE TABLE [dbo].[Blobs](
+		[Id] [int] NOT NULL,
+		[Data] [varbinary](max) NULL
+	)
+
+	ALTER TABLE [dbo].[Blobs]
+		ADD CONSTRAINT [PK_Blobs] PRIMARY KEY CLUSTERED ([Id] ASC)	
+
+	CREATE TABLE [dbo].[EnumTest](
+		[Id] [int] IDENTITY (1, 1) NOT NULL,
+		[Flag] [int] NOT NULL
+	)
+
+	ALTER TABLE [dbo].[EnumTest]
+		ADD CONSTRAINT [PK_EnumTest] PRIMARY KEY CLUSTERED ([Id] ASC)	
+
+	CREATE TABLE [dbo].[DeleteTest](
+		[Id] [int] NOT NULL
+	)
+
+	ALTER TABLE [dbo].[DeleteTest]
+		ADD CONSTRAINT [PK_DeleteTest] PRIMARY KEY CLUSTERED ([Id] ASC)	
+
+	CREATE TABLE [dbo].[DecimalTest](
+		[Id] [int] IDENTITY (1, 1) NOT NULL,
+		[Value] [decimal](20,6) NOT NULL
+	)
+
+	CREATE TABLE [dbo].[GeographyTest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Description] [nvarchar](50) NOT NULL,
+	[Place] [geography] NULL,
+	CONSTRAINT [PK_GeographyTest] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+	
+	CREATE TABLE [dbo].[GeometryTest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Description] [nvarchar](50) NOT NULL,
+	[Place] [geography] NULL,
+	CONSTRAINT [PK_GeometryTest] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+	
+	CREATE TABLE [dbo].[HierarchyIdTest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Description] [nvarchar](50) NOT NULL,
+	[Place] [geography] NULL,
+	CONSTRAINT [PK_HierarchyIdTest] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+
+	CREATE TABLE [dbo].[TimestampTest](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Description] [nvarchar](50),
+	[Version] [timestamp],
+	CONSTRAINT [PK_TimestampTest] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+
+	BEGIN TRANSACTION
+	SET IDENTITY_INSERT [dbo].[Customers] ON
+	INSERT INTO [dbo].[Customers] ([CustomerId], [Name], [Address]) VALUES (1, N'Test', N'100 Road')
+	SET IDENTITY_INSERT [dbo].[Customers] OFF
+	INSERT INTO [dbo].[Notes] ([CustomerId], [Text]) VALUES (1, 'Note 1');
+	INSERT INTO [dbo].[Notes] ([CustomerId], [Text]) VALUES (1, 'Note 2');
+	SET IDENTITY_INSERT [dbo].[Orders] ON
+	INSERT INTO [dbo].[Orders] ([OrderId], [OrderDate], [CustomerId]) VALUES (1, '20101010 00:00:00.000', 1)
+	SET IDENTITY_INSERT [dbo].[Orders] OFF
+	SET IDENTITY_INSERT [dbo].[Items] ON
+	INSERT INTO [dbo].[Items] ([ItemId], [Name], [Price]) VALUES (1, N'Widget', 4.5000)
+	SET IDENTITY_INSERT [dbo].[Items] OFF
+	SET IDENTITY_INSERT [dbo].[OrderItems] ON
+	INSERT INTO [dbo].[OrderItems] ([OrderItemId], [OrderId], [ItemId], [Quantity]) VALUES (1, 1, 1, 10)
+	SET IDENTITY_INSERT [dbo].[OrderItems] OFF
+	SET IDENTITY_INSERT [dbo].[Users] ON
+	INSERT INTO [dbo].[Users] ([Id], [Name], [Password], [Age]) VALUES (1,'Bob','Bob',32)
+	INSERT INTO [dbo].[Users] ([Id], [Name], [Password], [Age]) VALUES (2,'Charlie','Charlie',49)
+	INSERT INTO [dbo].[Users] ([Id], [Name], [Password], [Age]) VALUES (3,'Dave','Dave',12)
+	SET IDENTITY_INSERT [dbo].[Users] OFF
+	SET IDENTITY_INSERT [dbo].[UsersWithChar] ON
+	INSERT INTO [dbo].[UsersWithChar] ([Id], [Name], [Password], [Age]) VALUES (1,'Bob','Bob',32)
+	INSERT INTO [dbo].[UsersWithChar] ([Id], [Name], [Password], [Age]) VALUES (2,'Charlie','Charlie',49)
+	INSERT INTO [dbo].[UsersWithChar] ([Id], [Name], [Password], [Age]) VALUES (3,'Dave','Dave',12)
+	SET IDENTITY_INSERT [dbo].[UsersWithChar] OFF
+	SET IDENTITY_INSERT [dbo].[Employee] ON
+	INSERT INTO [dbo].[Employee] ([Id], [Name], [ManagerId]) VALUES (1, 'Alice', NULL)
+	INSERT INTO [dbo].[Employee] ([Id], [Name], [ManagerId]) VALUES (2, 'Bob', 1)
+	INSERT INTO [dbo].[Employee] ([Id], [Name], [ManagerId]) VALUES (3, 'Charlie', 2)
+	SET IDENTITY_INSERT [dbo].[Employee] OFF
+	
+	DECLARE @PagingId AS INT
+	SET @PagingId = 1
+	WHILE @PagingId <= 100
+	BEGIN
+		INSERT INTO [dbo].[PagingTest] ([Id]) VALUES (@PagingId)
+		SET @PagingId = @PagingId + 1
+	END
+	
+	INSERT INTO [dbo].[DecimalTest] ([Value]) VALUES (1.234567)
+	COMMIT TRANSACTION
+
+	ALTER TABLE [dbo].[Notes] WITH NOCHECK
+		ADD CONSTRAINT [FK_Notes_Customers] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Customers] ([CustomerId]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+	ALTER TABLE [dbo].[Orders] WITH NOCHECK
+		ADD CONSTRAINT [FK_Orders_Customers] FOREIGN KEY ([CustomerId]) REFERENCES [dbo].[Customers] ([CustomerId]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+	ALTER TABLE [dbo].[OrderItems] WITH NOCHECK
+		ADD CONSTRAINT [FK_OrderItems_Items] FOREIGN KEY ([ItemId]) REFERENCES [dbo].[Items] ([ItemId]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+	ALTER TABLE [dbo].[OrderItems] WITH NOCHECK
+		ADD CONSTRAINT [FK_OrderItems_Orders] FOREIGN KEY ([OrderId]) REFERENCES [dbo].[Orders] ([OrderId]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+END
+GO
+
+EXEC [dbo].[TestReset]
+GO
+
+CREATE VIEW [dbo].[VwCustomers]
+    AS
+        SELECT     Name, Address, CustomerId
+        FROM         dbo.Customers
+        WHERE     (Name LIKE '%e%')
+    
+GO
+
+CREATE TABLE [dbo].[SchemaTable] ([Id] int not null, [Description] nvarchar(100) not null);
+GO
+INSERT INTO [dbo].[SchemaTable] VALUES (1, 'Pass')
+GO
+
+CREATE SCHEMA [test] AUTHORIZATION [dbo]
+GO
+
+CREATE TABLE [test].[SchemaTable] ([Id] int not null, [Description] nvarchar(100) not null);
+GO
+INSERT INTO [test].[SchemaTable] VALUES (2, 'Pass')
+GO
+
+CREATE PROCEDURE [dbo].[GetCustomers]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT * FROM Customers
+    ORDER BY CustomerId
+END
+GO
+CREATE PROCEDURE [dbo].[CreateCustomer]
+AS
+BEGIN
+    SET NOCOUNT ON;
+	INSERT INTO Customers (Name, Address) VALUES ('Proccy','ProcAddress');
+    SELECT * FROM Customers WHERE CustomerId = SCOPE_IDENTITY()
+END
+GO
+CREATE PROCEDURE [dbo].[GetCustomerAndOrders] (@CustomerId int)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT * FROM Customers WHERE CustomerId = @CustomerId;
+    SELECT * FROM Orders WHERE CustomerId = @CustomerId;
+END
+GO
+CREATE PROCEDURE [dbo].[GetCustomerCount]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    RETURN 1
+END
+GO
+CREATE PROCEDURE ReturnStrings(@Strings AS [dbo].[StringList] READONLY)
+AS
+SELECT Value FROM @Strings
+GO
+CREATE FUNCTION [dbo].[VarcharAndReturnInt] (@AValue varchar(50)) RETURNS INT AS BEGIN
+  IF ISNUMERIC(@AValue) = 1
+  BEGIN
+    RETURN cast (@AValue  as int)
+  END
+  RETURN 42
+END
+GO
+CREATE TABLE [dbo].[GroupTestMaster] (
+		[Id]       INT            IDENTITY (1, 1) NOT NULL,
+		[Name]     NVARCHAR (100) NOT NULL
+	);
+
+ALTER TABLE [dbo].[GroupTestMaster]
+	ADD CONSTRAINT [PK_GroupTestMaster] PRIMARY KEY CLUSTERED ([Id] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+GO
+CREATE TABLE [dbo].[GroupTestDetail] (
+		[Id]    INT      IDENTITY (1, 1) NOT NULL,
+		[Date]  DATETIME NOT NULL,
+		[Number] INT NOT NULL,
+		[MasterId] INT      NOT NULL
+	);
+
+ALTER TABLE [dbo].[GroupTestDetail]
+	ADD CONSTRAINT [PK_GroupTestDetail] PRIMARY KEY CLUSTERED ([Id] ASC) WITH (ALLOW_PAGE_LOCKS = ON, ALLOW_ROW_LOCKS = ON, PAD_INDEX = OFF, IGNORE_DUP_KEY = OFF, STATISTICS_NORECOMPUTE = OFF);
+
+ALTER TABLE [dbo].[GroupTestDetail] WITH NOCHECK
+	ADD CONSTRAINT [FK_GroupTestDetail_GroupTestMaster] FOREIGN KEY ([MasterId]) REFERENCES [dbo].[GroupTestMaster] ([Id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+INSERT INTO [dbo].[GroupTestMaster] VALUES ('One')
+INSERT INTO [dbo].[GroupTestMaster] VALUES ('Two')
+INSERT INTO [dbo].[GroupTestDetail] VALUES ('1999-1-1',1,1)
+INSERT INTO [dbo].[GroupTestDetail] VALUES ('2000-1-1',2,1)
+INSERT INTO [dbo].[GroupTestDetail] VALUES ('2001-1-1',3,1)
+INSERT INTO [dbo].[GroupTestDetail] VALUES ('2010-1-1',2,2)
+INSERT INTO [dbo].[GroupTestDetail] VALUES ('2011-1-1',3,2)
